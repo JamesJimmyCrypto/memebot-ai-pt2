@@ -1,7 +1,7 @@
 import { run, HandlerContext, CommandHandlers } from "@xmtp/message-kit";
-import { commands } from "./commands.js";
-import {handler as  send } from "./send.js";
-import {handler as  help } from "./help.js";
+import { commands } from "./commands";
+import {handler as  send } from "./send";
+import {handler as  help } from "./help";
 
 const commandHandlers: CommandHandlers = {
   "/send": send,
