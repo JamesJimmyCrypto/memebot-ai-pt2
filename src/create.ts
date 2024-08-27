@@ -7,13 +7,13 @@ export async function handler(context: HandlerContext) {
         },
       } = context;
 
-      const { url:_url } = params; 
+      const { url } = params; 
 
-
+      context.send(url);
       // Generate URL for the mint transaction
-      let url_create = generateFrameURL(_url,  {
-            });
-      context.send(`${url_create}`);
+     // let url_create = generateFrameURL(url,  {
+       //     });
+      //context.send(`${url_create}`);
 
       //context.reply("You called the send command"+JSON.stringify(params)+JSON.stringify(sender));
 }
