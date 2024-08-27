@@ -6,5 +6,5 @@ export async function handler(context: HandlerContext) {
           content: { content, params },sender
         },
       } = context;
-      context.reply("You called the send command"+JSON.stringify(params)+JSON.stringify(sender));
+      context.send("You called the send command"+JSON.stringify(params)+JSON.stringify(sender));
 }
