@@ -30,8 +30,28 @@ async function handleTextMessage(context: HandlerContext) {
   const {
     content: { content: text },
   } = context.message;
+
+ let commandText = text.split()[0];
+ commandText =  commandText.trim();
+  
  
-  if (text.startsWith("/")) {
-    await context.intent(text);
-  }
+  switch (commandText) {
+    case "/help":
+      await context.intent(text);
+      break;
+    
+      case "/create":
+      await context.intent(text);
+      break;
+
+      case "/finalize":
+        await context.intent(text);
+      break;
+  
+    // Add more cases as needed
+    default:
+      await context.intent("/help");
+  } 
+
+
 }

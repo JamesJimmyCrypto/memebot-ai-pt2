@@ -1,4 +1,5 @@
 import { HandlerContext, User } from "@xmtp/message-kit";
+import { commands } from "./commands.js";
 
 export async function handler(context: HandlerContext) {
     const {
@@ -6,5 +7,13 @@ export async function handler(context: HandlerContext) {
           content: { content, params },
         },
       } = context;
-      context.send("You called the help command");
+
+      const _commands = commands[0].commands;
+      let prompt = ""
+      for(let command in _commands){
+         prompt += _commands[command].command+"\n";
+         prompt += _commands[command].description+"\n";
+
+      }
+      context.send(prompt);
 }
