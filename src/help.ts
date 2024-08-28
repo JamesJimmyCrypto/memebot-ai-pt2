@@ -9,10 +9,10 @@ export async function handler(context: HandlerContext) {
       } = context;
 
       const _commands = commands[0].commands;
-      let prompt = ""
+      let prompt = "Commands: \n\n"
       for(let command in _commands){
          prompt += _commands[command].command+"\n";
-         prompt += _commands[command].description+"\n";
+         prompt += _commands[command].description+"\n\n";
 
       }
       context.send(prompt);
