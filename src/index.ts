@@ -37,7 +37,7 @@ async function handleTextMessage(context: HandlerContext) {
 
  let commandText = text.split()[0];
  commandText =  commandText.trim();
-  
+  context.send(commandText)
  
   switch (commandText) {
     case "/help":
