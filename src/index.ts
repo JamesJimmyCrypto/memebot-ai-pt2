@@ -35,7 +35,7 @@ async function handleTextMessage(context: HandlerContext) {
     content: { content: text },
   } = context.message;
 
- let commandText = text.split()[0];
+ let commandText = text.split(' ')[0];
  commandText =  commandText.trim();
   context.send(commandText)
  
