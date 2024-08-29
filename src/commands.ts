@@ -32,9 +32,9 @@ export const commands: CommandGroup[] = [
           params: {}
       },
       {
-        command: "/create [description]",
+        command: "/create [prompt]",
         description: "Create Meme Coin.",
-        params: { description: {
+        params: { prompt: {
             default: "", // Default value
             type: "string", // This will parse it to a string
         },}
