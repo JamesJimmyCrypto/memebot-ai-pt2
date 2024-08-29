@@ -7,9 +7,9 @@ export async function handler(context: HandlerContext) {
         },
       } = context;
 
-      const { description:desc } = params; 
+      const { prompt } = params; 
 
 
-      context.send("You called the create command with"+JSON.stringify(params));
+      context.send("You called the create command with : "+prompt);
 }
 
