@@ -51,7 +51,9 @@ async function handleTextMessage(context: HandlerContext) {
       case "/finalize":
         await context.intent(text);
       break;
-  
+      case "/send":
+        await context.intent(text);
+        break; 
     // Add more cases as needed
     default:
       await context.intent("/help");

@@ -36,7 +36,7 @@ export const commands: CommandGroup[] = [
         description: "Create Meme Coin.",
         params: { description: {
             default: "", // Default value
-            type: "string", // This will parse it to a number
+            type: "string", // This will parse it to a string
         },}
     },{
       command: "/finalize",
