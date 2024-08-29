@@ -32,13 +32,17 @@ export const commands: CommandGroup[] = [
           params: {}
       },
       {
-        command: "/create",
+        command: "/create [description]",
         description: "Create Meme Coin.",
-        params: { url: {
+        params: { description: {
             default: "", // Default value
             type: "string", // This will parse it to a number
         },}
-    }
+    },{
+      command: "/finalize",
+      description: "Send Frame to Create Meme Coin.",
+      params: { }
+  }
     ],
   },
   
