@@ -10,6 +10,6 @@ export async function handler(context: HandlerContext) {
       const { description:desc } = params; 
 
 
-      context.reply("You called the create command with"+desc);
+      context.reply("You called the create command with"+JSON.stringify(params));
 }
 
