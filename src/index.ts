@@ -6,16 +6,13 @@ import {handler as  create } from "./create.js";
 import { contractABI,contractAddress } from "./contracts/contracts.js";
 import {ethers} from "ethers"
 
-let wallet
 
-
-let signer
 
 //Track 
 const inMemoryCacheStep = new Map<string, number>();
 
 let x=1974;
-async function _create(context: HandlerContext) {
+async function _create(context: HandlerContext,signer:any) {
   const contract = new ethers.Contract(contractAddress,contractABI,signer)
   const {
     message: {
@@ -65,14 +62,7 @@ const appConfig = {
  
 run(async (context: HandlerContext) => {
   //Your logic here
-  let wallet = new ethers.Wallet(process?.env?.KEY)
 
-
-  const provider = new ethers.providers.JsonRpcProvider(
-  "https://devnet.galadriel.com/"  );
-  let signer = wallet.connect(provider);
-  
-  
   const {
     message: { typeId },
   } = context;
@@ -93,7 +83,12 @@ async function handleTextMessage(context: HandlerContext) {
  let commandText = text.split(' ')[0];
  commandText =  commandText.trim();
   ///context.send(commandText)
- 
+  let wallet = new ethers.Wallet(process?.env?.KEY)
+
+
+  const provider = new ethers.providers.JsonRpcProvider(
+  "https://devnet.galadriel.com/"  );
+  let signer = wallet.connect(provider);
   switch (commandText) {
     case "/help":
     context.send(x.toString()); 
@@ -106,7 +101,7 @@ async function handleTextMessage(context: HandlerContext) {
 
       //await context.intent(text);
       if(inMemoryCacheStep.get(sender.address) == 0)
-        _create(context);
+        _create(context,signer);
       else
          context.send("Create command already called. Please select coin");
       break;
