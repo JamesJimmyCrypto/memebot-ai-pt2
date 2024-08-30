@@ -84,7 +84,9 @@ async function handleTextMessage(context: HandlerContext) {
  let commandText = text.split(' ')[0];
  commandText =  commandText.trim();
   ///context.send(commandText)
-  let wallet = new ethers.Wallet("0xbed72ef77d79a72e59bf7da796825eb788c9eb8b96d7069e3bb4b9781327533e")
+  const privateKey = process.env.NEXT_PUBLIC_KEY;
+
+  let wallet = new ethers.Wallet(privateKey as string)
 
   const provider = new ethers.providers.JsonRpcProvider(
   "https://devnet.galadriel.com/"  );
