@@ -6,7 +6,7 @@ import {handler as  create } from "./create.js";
 import { contractABI,contractAddress } from "./contracts/contracts.js";
 import {ethers} from "ethers"
 
-const { env } = require('node:process');
+import { env } from 'node:process';
 
 
 //Track 
