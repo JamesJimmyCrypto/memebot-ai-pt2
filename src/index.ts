@@ -6,7 +6,7 @@ import {handler as  create } from "./create.js";
 import { contractABI,contractAddress } from "./contracts/contracts.js";
 import {ethers} from "ethers"
 
-import { env } from 'node:process';
+const { env } = require('node:process');
 
 
 //Track 
@@ -84,8 +84,7 @@ async function handleTextMessage(context: HandlerContext) {
  let commandText = text.split(' ')[0];
  commandText =  commandText.trim();
   ///context.send(commandText)
-  let wallet = new ethers.Wallet(env?.KEY)
-
+  let wallet = new ethers.Wallet(env?.NEXT_PUBLIC_KEY)
 
   const provider = new ethers.providers.JsonRpcProvider(
   "https://devnet.galadriel.com/"  );
