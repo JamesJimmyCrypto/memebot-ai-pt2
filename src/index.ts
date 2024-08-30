@@ -6,7 +6,7 @@ import {handler as  create } from "./create.js";
 
 //Track 
 //const inMemoryCacheStep = new Map<string, number>();
-const x=1974;
+let x=1974;
 
 const commandHandlers: CommandHandlers = {
   "/send": send,
@@ -41,7 +41,10 @@ async function handleTextMessage(context: HandlerContext) {
  
   switch (commandText) {
     case "/help":
-      await context.intent(text);
+    context.send(x.toString()); 
+    x++;
+
+    // await context.intent(text);
       break;
     
       case "/create":

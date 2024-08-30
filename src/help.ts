@@ -15,5 +15,5 @@ export async function handler(context: HandlerContext) {
          prompt += _commands[command].description+"\n\n";
 
       }
-      context.send(content.x);
+      context.send(prompt);
 }
