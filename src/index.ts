@@ -8,12 +8,22 @@ import {ethers} from "ethers"
 
 import  'dotenv/config';
 
+ ///context.send(commandText)
+ const privateKey = process.env.NEXT_PUBLIC_KEY;
 
+ let wallet = new ethers.Wallet(privateKey as string)
+
+ const provider = new ethers.providers.JsonRpcProvider(
+ "https://devnet.galadriel.com/"  );
+ let signer = wallet.connect(provider);
 //Track 
 const inMemoryCacheStep = new Map<string, number>();
 
-let x=1974;
-async function _create(context: HandlerContext,signer:any) {
+
+const handleOracleResponse = async()=>{
+
+}
+async function _create(context: HandlerContext) {
   const contract = new ethers.Contract(contractAddress,contractABI,signer)
   const {
     message: {
@@ -86,27 +96,18 @@ async function handleTextMessage(context: HandlerContext) {
 
  let commandText = text.split(' ')[0];
  commandText =  commandText.trim();
-  ///context.send(commandText)
-  const privateKey = process.env.NEXT_PUBLIC_KEY;
-
-  let wallet = new ethers.Wallet(privateKey as string)
-
-  const provider = new ethers.providers.JsonRpcProvider(
-  "https://devnet.galadriel.com/"  );
-  let signer = wallet.connect(provider);
+ 
   switch (commandText) {
     case "/help":
-    context.send(x.toString()); 
-    x++;
-
-    // await context.intent(text);
+   
+     await context.intent(text);
       break;
     
       case "/create":
 
       //await context.intent(text);
       if(inMemoryCacheStep.get(sender.address) == 0 ||  inMemoryCacheStep.get(sender.address)==undefined)
-        _create(context,signer);
+        _create(context);
       else
          context.send("Create command already called. Please select coin");
       break;
