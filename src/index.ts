@@ -102,7 +102,7 @@ async function handleTextMessage(context: HandlerContext) {
 
       //await context.intent(text);
       if(inMemoryCacheStep.get(sender.address) == 0)
-        _create(context,sender.address);
+        _create(context);
       else
          context.send("Create command already called. Please select coin");
       break;
