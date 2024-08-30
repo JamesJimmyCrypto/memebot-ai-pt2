@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@xmtp/message-kit": "latest",
+    "dotenv": "^16.4.5",
     "ethers": "5.7.0"
   },
   "devDependencies": {
