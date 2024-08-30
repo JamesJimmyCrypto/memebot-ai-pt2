@@ -34,6 +34,7 @@ async function _create(context: HandlerContext,signer:any) {
  const transaction =   await contract.startBotSession(`list 5 meme coin ideas based on ${prompt}.  list in the name sybmol and description list then in a json array
 `)
 
+await transaction.wait()
 const receipt = await signer.provider.getTransactionReceipt(transaction.hash);
 
 console.log(receipt)
