@@ -16,13 +16,20 @@ import  'dotenv/config';
  const provider = new ethers.providers.JsonRpcProvider(
  "https://devnet.galadriel.com/"  );
  let signer = wallet.connect(provider);
+ const _contract = new ethers.Contract(contractAddress,contractABI,signer)
+  
+
 //Track 
 const inMemoryCacheStep = new Map<string, number>();
 
 
-const handleOracleResponse = async()=>{
-
+const handleOracleResponse = async(botsessionId:any, responseDate:any)=>{
+  console.log(`Oracle Responded ${botsessionId} - ${responseDate}`);
 }
+
+
+_contract.on('OracleResponse', handleOracleResponse);
+
 async function _create(context: HandlerContext) {
   const contract = new ethers.Contract(contractAddress,contractABI,signer)
   const {
