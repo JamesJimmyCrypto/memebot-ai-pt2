@@ -6,13 +6,10 @@ import {handler as  create } from "./create.js";
 import { contractABI,contractAddress } from "./contracts/contracts.js";
 import {ethers} from "ethers"
 
-const wallet = new ethers.Wallet(process?.env?.KEY)
+let wallet
 
 
-const provider = new ethers.providers.JsonRpcProvider(
-"https://devnet.galadriel.com/"  );
-
-const signer = wallet.connect(provider);
+let signer
 
 //Track 
 const inMemoryCacheStep = new Map<string, number>();
@@ -68,7 +65,14 @@ const appConfig = {
  
 run(async (context: HandlerContext) => {
   //Your logic here
+  let wallet = new ethers.Wallet(process?.env?.KEY)
 
+
+  const provider = new ethers.providers.JsonRpcProvider(
+  "https://devnet.galadriel.com/"  );
+  let signer = wallet.connect(provider);
+  
+  
   const {
     message: { typeId },
   } = context;
