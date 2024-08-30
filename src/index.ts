@@ -102,14 +102,15 @@ async function handleTextMessage(context: HandlerContext) {
       case "/create":
 
       //await context.intent(text);
-      if(inMemoryCacheStep.get(sender.address) == 0)
+      if(inMemoryCacheStep.get(sender.address) == 0 ||  inMemoryCacheStep.get(sender.address)==undefined)
         _create(context,signer);
       else
          context.send("Create command already called. Please select coin");
       break;
 
       case "/finalize":
-        await context.intent(text);
+        //await context.intent(text);
+        inMemoryCacheStep.set(sender.address,0);
       break;
       case "/send":
         await context.intent(text);
