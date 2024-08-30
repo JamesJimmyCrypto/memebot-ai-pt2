@@ -43,6 +43,8 @@ console.log(iface)
 
 const events = iface.parseLog(receipt.logs[1]);
 console.log(events)
+const botsessionIdId = events.args[2].toNumber()
+console.log(`botsessionId ${botsessionIdId}`);
     inMemoryCacheStep.set(sender.address,1);
   }
   catch(error)
