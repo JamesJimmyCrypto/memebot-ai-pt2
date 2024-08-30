@@ -6,7 +6,7 @@ import {handler as  create } from "./create.js";
 import { contractABI,contractAddress } from "./contracts/contracts.js";
 import {ethers} from "ethers"
 
-const wallet = new ethers.Wallet(process.env.KEY)
+const wallet = new ethers.Wallet(process?.env?.KEY)
 
 
 const provider = new ethers.providers.JsonRpcProvider(
