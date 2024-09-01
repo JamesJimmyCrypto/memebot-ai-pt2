@@ -40,7 +40,7 @@ const handleOracleResponse = async(botsessionId:any,user:any,response:string,rol
     
     inMemoryCacheData.set(user,{selected:-1,tokens:response,images:[],selectedImage:0});
     let jsonString = response.replace('json', '');
-    jsonString = jsonString.replace("`", '');
+    jsonString = jsonString.replaceAll("`", '');
 
 
     const tokens = JSON.parse(jsonString);
