@@ -6,26 +6,7 @@ export const commands: CommandGroup[] = [
     icon: "💸",
     description: "Multipurpose transaction command.",
     commands: [
-      {
-        command: "/send [amount] [token] [@username]",
-        description:
-          "Send a specified amount of a cryptocurrency to a destination address.",
-        params: {
-          amount: {
-            default: 10, // Default value
-            type: "number", // This will parse it to a number
-          },
-          token: {
-            default: "usdc", // Default value
-            type: "string", // String field always need to specify accepted values
-            values: ["eth", "dai", "usdc", "degen"], // Accepted values
-          },
-          username: {
-            default: "", // No default username
-            type: "username", // This will parse it to a username array
-          },
-        },
-      },
+     
       {
           command: "/help",
           description: "Get help with the app.",
@@ -38,7 +19,12 @@ export const commands: CommandGroup[] = [
             default: "", // Default value
             type: "string", // This will parse it to a string
         },}
-    },{
+    },
+    {
+      command: "/logo ",
+      description: "Generate logo.",
+      params: { }
+  },{
       command: "/finalize",
       description: "Send Frame to Create Meme Coin.",
       params: { }
@@ -51,8 +37,8 @@ export const commands: CommandGroup[] = [
       }
     }
   },{
-    command: "/selectimage [choice]",
-    description: "Select or choose image.",
+    command: "/selectlogo [choice]",
+    description: "Select or choose logo.",
     params: { choice: {
       default: 1, // Default value
       type: "number", // This will parse it to a number

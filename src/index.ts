@@ -8,6 +8,13 @@ import {ethers} from "ethers"
 
 import  'dotenv/config';
 
+interface Token {
+  
+  name:string;
+  symbol:string
+  description:string;
+  
+}
 
 let _context:HandlerContext;
  ///context.send(commandText)
@@ -24,7 +31,7 @@ let _context:HandlerContext;
 //Track 
 const inMemoryCacheStep = new Map<string, number>();
 
-const inMemoryCacheData = new Map<string, {selected:number,tokens:string,images:string[],selectedImage:number}>();
+const inMemoryCacheData = new Map<string, {selected:number,tokens:Token[],images:string[],selectedImage:number}>();
 const inMemoryCacheSessionId = new Map<string, number>();
 
 const handleOracleResponse = async(botsessionId:any,user:any,response:string,role:string, responseDate:any)=>{
@@ -38,15 +45,16 @@ const handleOracleResponse = async(botsessionId:any,user:any,response:string,rol
   if(role=="assistant")
   {
     
-    inMemoryCacheData.set(user,{selected:-1,tokens:response,images:[],selectedImage:0});
     let jsonString = response.replace('json', '');
     jsonString = jsonString.replaceAll("`", '');
 
 
     const tokens = JSON.parse(jsonString);
     const formattedItems = tokens.map((item:any) => {
-    return `${item.name} (${item.symbol})\n${item.description}`;
+    return `Symbol: ${item.symbol} - Name: ${item.name} \n\n Description:\n${item.description}\n\n`;
   });
+  inMemoryCacheData.set(user,{selected:-1,tokens:tokens,images:[],selectedImage:0});
+
   _context.sendTo(formattedItems,[user]);
 }
 
@@ -68,7 +76,7 @@ if(role=="image")
 
 _contract.on('OracleResponse', handleOracleResponse);
 
-async function selectImage(context: HandlerContext) {
+async function selectLogo(context: HandlerContext) {
   const {
     message: {
       content: { content, params },sender
@@ -85,7 +93,7 @@ async function selectImage(context: HandlerContext) {
       return
     }  
       
-  inMemoryCacheStep.set(sender.address,3);
+  inMemoryCacheStep.set(sender.address,4);
   tokenData.selectedImage =  choice;
   inMemoryCacheData.set(sender.address,tokenData);
 
@@ -120,8 +128,8 @@ async function selectToken(context: HandlerContext) {
     tokenData.selected =  choice;
     inMemoryCacheData.set(sender.address,tokenData);
 
-  const tokens = JSON.parse(tokenData.tokens);
-  context.send(`You selected ${tokens[0].name} ${tokens[0].sybmol}\n ${tokens[0].description}`)
+  
+    context.send(`You selected token: ${choice}`)
   
   }
  
@@ -169,6 +177,33 @@ console.log(`botsessionId ${botsessionId}`);
 
 }
 
+async function createLogo(context: HandlerContext) {
+  const contract = new ethers.Contract(contractAddress,contractABI,signer)
+  const {
+    message: {
+      content: { content, params },sender
+    },
+  } = context;
+  
+  let tokenData = inMemoryCacheData.get(sender.address);
+  let token =  tokenData?.tokens[tokenData.selected-1]
+  let sessionId = inMemoryCacheSessionId.get(sender.address)
+
+  try
+  { 
+
+ const transaction =   await contract.videobotsessions(`Create a logo for a meme coin named ${token?.name}`,sender.address,sessionId)
+
+    await transaction.wait()
+    inMemoryCacheStep.set(sender.address,3);
+    
+  }
+  catch(error)
+  {
+     console.log(error);
+  }
+
+}
 
 
 async function finalizeSession(context: HandlerContext) {
@@ -188,7 +223,7 @@ await transaction.wait()
 
 
 inMemoryCacheStep.set(sender.address,0);
-inMemoryCacheData.set(sender.address,{selected:-1,tokens:"",images:[],selectedImage:0});
+inMemoryCacheData.set(sender.address,{selected:-1,tokens:[],images:[],selectedImage:0});
 
   }
   catch(error)
@@ -239,7 +274,6 @@ async function handleTextMessage(context: HandlerContext) {
     
       case "/create":
 
-      //await context.intent(text);
       if(inMemoryCacheStep.get(sender.address) == 0 ||  inMemoryCacheStep.get(sender.address)==undefined)
         _create(context);
       else
@@ -247,7 +281,6 @@ async function handleTextMessage(context: HandlerContext) {
       break;
 
       case "/select":
-        //await context.intent(text);
       if(inMemoryCacheStep.get(sender.address) == 1 )
         selectToken(context);
       else
@@ -255,24 +288,30 @@ async function handleTextMessage(context: HandlerContext) {
       
         break; 
 
-
-        case "/selectimage":
-          //await context.intent(text);
+        case "/logo":
         if(inMemoryCacheStep.get(sender.address) == 2 )
-          selectImage(context);
+          createLogo(context);
+        else
+           context.send("Please select coin.");
+        
+          break;   
+        case "/selectlogo":
+        if(inMemoryCacheStep.get(sender.address) == 3 )
+          selectLogo(context);
         else
            context.send("Please select coin.");
         
           break;   
 
       case "/finalize":
-        //await context.intent(text);
+        if(inMemoryCacheStep.get(sender.address) == 4 )
+
         finalizeSession(context)
-      
+        else      
+        context.send("Meme coin cannot be finalized.");
+
       break;
-      case "/send":
-        await context.intent(text);
-        break; 
+     
     // Add more cases as needed
     default:
       await context.intent("/help");
