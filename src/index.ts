@@ -3,7 +3,7 @@ import { commands } from "./commands.js";
 import {handler as  send } from "./send.js";
 import {handler as  help } from "./help.js";
 import {handler as  create } from "./create.js";
-import { contractABI,contractAddress } from "./contracts/contracts.js";
+import { contractABI,contractAddress ,marketingContractABI,marketingContractAddress} from "./contracts/contracts.js";
 import {ethers} from "ethers"
 
 import  'dotenv/config';
@@ -26,13 +26,22 @@ let _context:HandlerContext;
  "https://devnet.galadriel.com/"  );
  let signer = wallet.connect(provider);
  const _contract = new ethers.Contract(contractAddress,contractABI,signer)
-  
+ const _marketingContract = new ethers.Contract(marketingContractAddress,marketingContractABI,signer) 
 
 //Track 
 const inMemoryCacheStep = new Map<string, number>();
 
 const inMemoryCacheData = new Map<string, {selected:number,tokens:Token[],images:string[],selectedImage:number}>();
 const inMemoryCacheSessionId = new Map<string, number>();
+
+const handleMarketingOracleResponse = async(botsessionId:any,user:any,response:string,role:string, responseDate:any)=>{
+  console.log(`Oracle Responded ${botsessionId} - ${responseDate}`);
+  _context.sendTo(response,[user]);
+  
+}
+
+_marketingContract.on('OracleResponse', handleMarketingOracleResponse);
+
 
 const handleOracleResponse = async(botsessionId:any,user:any,response:string,role:string, responseDate:any)=>{
   console.log(`Oracle Responded ${botsessionId} - ${responseDate}`);
@@ -87,7 +96,7 @@ async function selectLogo(context: HandlerContext) {
   let tokenData = inMemoryCacheData.get(sender.address);
   if (tokenData)
   
-  {  if(choice < tokenData.images.length  || choice > tokenData.images.length)
+  {  if(choice < 1  || choice > tokenData.images.length)
     {
       context.send(`Error invalid choice.  Choose between 1-${tokenData.images.length}.`);
       return
@@ -208,18 +217,36 @@ async function createLogo(context: HandlerContext) {
 
 async function finalizeSession(context: HandlerContext) {
   const contract = new ethers.Contract(contractAddress,contractABI,signer)
+  const marketingContract = new ethers.Contract(marketingContractAddress,marketingContractABI,signer)
   const {
     message: {
       content: { content, params },sender
     },
   } = context;
+
+  const {network} = params;
+  
+  if(network != 1 || network !=2)
+    {
+      context.send("Invalid network. Use 1 Optimism or 2 Galadriel");
+      return;
+    }
+
+    const url = generateFrameURL(sender.address,network.toString())
+
+    context.send(url);
+
   const sessionId = inMemoryCacheSessionId.get(sender.address);
   try
   { 
 
- const transaction =   await contract.finalizeSession(sessionId)
 
-await transaction.wait()
+     let tokenData = inMemoryCacheData.get(sender.address);
+     let token =  tokenData?.tokens[tokenData.selected-1]
+    const tx =  await marketingContract.startBotSession(`Create a marketing plan for a meme coin named ${token?.name}. The token description is ${token?.description}`,sender.address) 
+    await tx.wait()
+    const transaction =   await contract.finalizeSession(sessionId)
+    await transaction.wait()
 
 
 inMemoryCacheStep.set(sender.address,0);
@@ -318,4 +345,23 @@ async function handleTextMessage(context: HandlerContext) {
   } 
 
 
+}
+
+
+// Function to generate a URL with query parameters for transactions
+function generateFrameURL(sender:string,network:string
+ ) {
+
+  const data = inMemoryCacheData.get(sender);
+  const image = data?.images[data.selectedImage];
+  const symbol = data?.tokens[data.selected].symbol;
+  const name = data?.tokens[data.selected].name;
+  const description = data?.tokens[data.selected].description;
+  // Filter out undefined parameters
+  let queryParams = new URLSearchParams({
+    image:(image ? image:'') 
+    ,symbol:(symbol ? symbol:'')  ,name:(name ? name:'') ,description:(description ? description:'') ,network:network  
+  }).toString();
+
+  return `${process.env.NEXT_PUBLIC_URL}?${queryParams}`;
 }

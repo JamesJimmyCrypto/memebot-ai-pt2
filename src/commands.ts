@@ -25,9 +25,13 @@ export const commands: CommandGroup[] = [
       description: "Generate logo.",
       params: { }
   },{
-      command: "/finalize",
-      description: "Send Frame to Create Meme Coin.",
-      params: { }
+      command: "/finalize [network]",
+      description: "Send frame to create coin on network. 1 - OP Sepolia 2 -  Galadriel",
+      params: { network: {
+        default: 1, // Default value
+        type: "number", // This will parse it to a number
+        }
+      }
   },{
     command: "/select [choice]",
     description: "Select or choose token suggestion.",
