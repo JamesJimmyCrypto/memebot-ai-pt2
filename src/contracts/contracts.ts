@@ -1,4 +1,4 @@
-export const contractAddress = "0x56D419BE253C553e77b56256282ce1349041F6c8"
+export const contractAddress = "0xFD6E227cd23ae313495398311F6faac436ebB09F"
 export const contractABI = [
 	{
 		"inputs": [
@@ -47,6 +47,19 @@ export const contractABI = [
 		],
 		"name": "BotSessionCreated",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "botsessionId",
+				"type": "uint256"
+			}
+		],
+		"name": "finalizeSession",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -175,6 +188,24 @@ export const contractABI = [
 			},
 			{
 				"indexed": false,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "response",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "role",
+				"type": "string"
+			},
+			{
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "responseDate",
 				"type": "uint256"
@@ -215,6 +246,11 @@ export const contractABI = [
 				"internalType": "string",
 				"name": "prompt",
 				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
 			}
 		],
 		"name": "startBotSession",

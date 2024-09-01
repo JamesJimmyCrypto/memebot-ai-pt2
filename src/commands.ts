@@ -42,6 +42,22 @@ export const commands: CommandGroup[] = [
       command: "/finalize",
       description: "Send Frame to Create Meme Coin.",
       params: { }
+  },{
+    command: "/select",
+    description: "Select or choose token suggestion.",
+    params: { choice: {
+      default: 1, // Default value
+      type: "number", // This will parse it to a number
+      }
+    }
+  },{
+    command: "/selectimage",
+    description: "Select or choose image.",
+    params: { choice: {
+      default: 1, // Default value
+      type: "number", // This will parse it to a number
+      }
+    }
   }
     ],
   },

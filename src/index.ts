@@ -8,6 +8,8 @@ import {ethers} from "ethers"
 
 import  'dotenv/config';
 
+
+let _context:HandlerContext;
  ///context.send(commandText)
  const privateKey = process.env.NEXT_PUBLIC_KEY;
 
@@ -22,13 +24,105 @@ import  'dotenv/config';
 //Track 
 const inMemoryCacheStep = new Map<string, number>();
 
+const inMemoryCacheData = new Map<string, {selected:number,tokens:string,images:string[],selectedImage:number}>();
+const inMemoryCacheSessionId = new Map<string, number>();
 
-const handleOracleResponse = async(botsessionId:any, responseDate:any)=>{
+const handleOracleResponse = async(botsessionId:any,user:any,response:string,role:string, responseDate:any)=>{
   console.log(`Oracle Responded ${botsessionId} - ${responseDate}`);
+  let code:string="";
+  if(role=="assistant")
+     code = "<tokens/>"
+  if(role=="image")
+    code= "<image/>"
+  
+  if(role=="assistant")
+  {
+    
+    inMemoryCacheData.set(user,{selected:-1,tokens:response,images:[],selectedImage:0});
+    const tokens = JSON.parse(response);
+    const formattedItems = tokens.map((item:any) => {
+    return `${item.name} (${item.symbol})\n${item.description}`;
+  });
+  _context.sendTo(response,[user]);
+}
+
+
+if(role=="image")
+  {
+    
+    const tokens = inMemoryCacheData.get(user);
+    if(tokens)
+    {  
+    tokens.images.push(response)
+    inMemoryCacheData.set(user,tokens);
+      _context.sendTo(code+response,[user]);
+  } 
+}
+
 }
 
 
 _contract.on('OracleResponse', handleOracleResponse);
+
+async function selectImage(context: HandlerContext) {
+  const {
+    message: {
+      content: { content, params },sender
+    },
+  } = context;
+
+  const {choice} = params;
+  let tokenData = inMemoryCacheData.get(sender.address);
+  if (tokenData)
+  
+  {  if(choice < tokenData.images.length  || choice > tokenData.images.length)
+    {
+      context.send(`Error invalid choice.  Choose between 1-${tokenData.images.length}.`);
+      return
+    }  
+      
+  inMemoryCacheStep.set(sender.address,3);
+  tokenData.selectedImage =  choice;
+  inMemoryCacheData.set(sender.address,tokenData);
+
+ 
+  context.send(`Image selected.`)
+  
+  }
+ 
+}
+
+
+async function selectToken(context: HandlerContext) {
+  const {
+    message: {
+      content: { content, params },sender
+    },
+  } = context;
+
+  const {choice} = params;
+  if(choice < 1 || choice > 5)
+  {  
+    context.send("Error invalid choice.  Choose between 1-5.");
+    return;
+  }   
+  
+    inMemoryCacheStep.set(sender.address,2);
+  let tokenData = inMemoryCacheData.get(sender.address);
+  if(tokenData)
+
+  {
+    
+    tokenData.selected =  choice;
+    inMemoryCacheData.set(sender.address,tokenData);
+
+  const tokens = JSON.parse(tokenData.tokens);
+  context.send(`You selected ${tokens[0].name} ${tokens[0].sybmol}\n ${tokens[0].description}`)
+  
+  }
+ 
+}
+
 
 async function _create(context: HandlerContext) {
   const contract = new ethers.Contract(contractAddress,contractABI,signer)
@@ -37,7 +131,6 @@ async function _create(context: HandlerContext) {
       content: { content, params },sender
     },
   } = context;
-
   const { prompt } = params; 
   if(prompt == "" || prompt == undefined)
   {
@@ -60,9 +153,39 @@ console.log(iface)
 
 const events = iface.parseLog(receipt.logs[1]);
 console.log(events)
-const botsessionIdId = events.args[1].toNumber()
-console.log(`botsessionId ${botsessionIdId}`);
+const botsessionId = events.args[1].toNumber()
+console.log(`botsessionId ${botsessionId}`);
     inMemoryCacheStep.set(sender.address,1);
+    inMemoryCacheSessionId.set(sender.address,botsessionId)
+  }
+  catch(error)
+  {
+     console.log(error);
+  }
+
+}
+
+
+
+async function finalizeSession(context: HandlerContext) {
+  const contract = new ethers.Contract(contractAddress,contractABI,signer)
+  const {
+    message: {
+      content: { content, params },sender
+    },
+  } = context;
+  const sessionId = inMemoryCacheSessionId.get(sender.address);
+  try
+  { 
+
+ const transaction =   await contract.finalizeSession(sessionId)
+
+await transaction.wait()
+
+
+inMemoryCacheStep.set(sender.address,0);
+inMemoryCacheData.set(sender.address,{selected:-1,tokens:"",images:[],selectedImage:0});
+
   }
   catch(error)
   {
@@ -83,7 +206,7 @@ const appConfig = {
  
 run(async (context: HandlerContext) => {
   //Your logic here
-
+ _context = context;
   const {
     message: { typeId },
   } = context;
@@ -119,9 +242,29 @@ async function handleTextMessage(context: HandlerContext) {
          context.send("Create command already called. Please select coin");
       break;
 
+      case "/select":
+        //await context.intent(text);
+      if(inMemoryCacheStep.get(sender.address) == 1 )
+        selectToken(context);
+      else
+         context.send("Please use create command.");
+      
+        break; 
+
+
+        case "/selectimage":
+          //await context.intent(text);
+        if(inMemoryCacheStep.get(sender.address) == 2 )
+          selectImage(context);
+        else
+           context.send("Please select coin.");
+        
+          break;   
+
       case "/finalize":
         //await context.intent(text);
-        inMemoryCacheStep.set(sender.address,0);
+        finalizeSession(context)
+      
       break;
       case "/send":
         await context.intent(text);
