@@ -289,7 +289,7 @@ async function handleTextMessage(context: HandlerContext) {
         break; 
 
         case "/logo":
-        if(inMemoryCacheStep.get(sender.address) == 2 )
+        if(inMemoryCacheStep.get(sender.address) == 2 ||inMemoryCacheStep.get(sender.address) == 3)
           createLogo(context);
         else
            context.send("Please select coin.");
@@ -299,7 +299,7 @@ async function handleTextMessage(context: HandlerContext) {
         if(inMemoryCacheStep.get(sender.address) == 3 )
           selectLogo(context);
         else
-           context.send("Please select coin.");
+           context.send("Please select a coin or generate a logo.");
         
           break;   
 
