@@ -39,7 +39,9 @@ const handleOracleResponse = async(botsessionId:any,user:any,response:string,rol
   {
     
     inMemoryCacheData.set(user,{selected:-1,tokens:response,images:[],selectedImage:0});
-    const jsonString = response.replace(/```json|```/g, '').trim();
+    let jsonString = response.replace('json', '');
+    jsonString = jsonString.replace("`", '');
+
 
     const tokens = JSON.parse(jsonString);
     const formattedItems = tokens.map((item:any) => {
