@@ -353,10 +353,10 @@ function generateFrameURL(sender:string,network:string
  ) {
 
   const data = inMemoryCacheData.get(sender);
-  const image = data?.images[data.selectedImage];
-  const symbol = data?.tokens[data.selected].symbol;
-  const name = data?.tokens[data.selected].name;
-  const description = data?.tokens[data.selected].description;
+  const image = data?.images[data.selectedImage-1];
+  const symbol = data?.tokens[data.selected-1].symbol;
+  const name = data?.tokens[data.selected-1].name;
+  const description = data?.tokens[data.selected-1].description;
   // Filter out undefined parameters
   let queryParams = new URLSearchParams({
     image:(image ? image:'') 
