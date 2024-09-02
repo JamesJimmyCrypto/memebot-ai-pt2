@@ -226,7 +226,7 @@ async function finalizeSession(context: HandlerContext) {
 
   const {network} = params;
   
-  if(network != 1 || network !=2)
+  if(network != 1 && network !=2)
     {
       context.send("Invalid network. Use 1 Optimism or 2 Galadriel");
       return;
