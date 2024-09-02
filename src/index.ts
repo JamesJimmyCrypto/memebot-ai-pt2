@@ -360,7 +360,7 @@ function generateFrameURL(sender:string,network:string
   // Filter out undefined parameters
   let queryParams = new URLSearchParams({
     image:(image ? image:'') 
-    ,symbol:(symbol ? symbol:'')  ,name:(name ? name:'') ,description:(description ? description:'') ,network:network  
+    ,symbol:(symbol ? symbol:'')  ,name:(name ? name:'')  ,network:network  
   }).toString();
 
   return `${process.env.NEXT_PUBLIC_URL}?${queryParams}`;
