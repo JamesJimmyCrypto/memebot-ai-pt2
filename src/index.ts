@@ -201,7 +201,7 @@ async function createLogo(context: HandlerContext) {
   try
   { 
 
- const transaction =   await contract.videobotsessions(`Create a logo for a meme coin named ${token?.name}`,sessionId)
+ const transaction =   await contract.createLogo(`Create a logo for a meme coin named ${token?.name}`,sessionId)
 
     await transaction.wait()
     inMemoryCacheStep.set(sender.address,3);
